@@ -38,6 +38,10 @@ app.layout = dbc.Container([
             dbc.Col([
                 html.Label("Durée d'exposition"),
                 dcc.Dropdown(id='dropdown-expo', options = ["Indifférent", "Moins de six mois", "Six mois à un an", "Un à cinq ans", "Cinq à dix ans", "Plus de 10 ans"], value = "Indifférent")
+            ], width = 4),
+            dbc.Col([
+                html.Label("Sexe"),
+                dcc.Dropdown(id='dropdown-sexe', options = ["Masculin", "Féminin"], value = "Féminin")
             ], width = 4)
         ], className = "mb-4")
     ], style = {'backgroundColor': '#222', 'padding': '20px', 'borderRadius': '10px'}),
@@ -73,9 +77,10 @@ app.layout = dbc.Container([
     [Input('dropdown-profession', 'value'),
      Input('dropdown-annee', 'value'),
      Input('dropdown-age', 'value'),
-     Input('dropdown-expo', 'value')]
+     Input('dropdown-expo', 'value'),
+     Input('dropdown-sexe', 'value')]
 )
-def update_graphe(profession, annee, age, expo):
+def update_graphe(profession, annee, age, expo, sexe):
     return {}, {}, {}
 
 
