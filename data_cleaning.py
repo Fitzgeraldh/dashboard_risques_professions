@@ -7,16 +7,18 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
     
     :param chemin: Le chemin vers le fichier excel
     """
+    
+    # On sélectionne uniquement les colonnes qui nous seront utiles lors du chargement
     colonnes_utiles = [
         'libellé profession', 
         'libellé tranche d\'age', 
         'libellé sexe', 
         'Libellé durée d\'exposition', 
         'Libellé syndrome/ CIM 10',
-        'Nombre de Mp en premier règlement', 
+        'Nombre de MP en premier règlement', 
         'Nombre de nouvelles IP', 
-        'dont IP avec taux <10%', 
-        'dont IP avec taux >=10%', 
+        'dont IP avec taux < 10%',
+        'dont IP avec taux >= 10%',
         'Nombre de décès', 
         'Nombre de journées perdues', 
         'Somme des taux d\'IP'
@@ -33,10 +35,10 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
     
     # On force le format numérique pour les colonnes de calcul et on remplace les vides par des 0
     colonnes_num = [
-        'Nombre de Mp en premier règlement', 
+        'Nombre de MP en premier règlement', 
         'Nombre de nouvelles IP', 
-        'dont IP avec taux <10%', 
-        'dont IP avec taux >=10%', 
+        'dont IP avec taux < 10%', 
+        'dont IP avec taux >= 10%', 
         'Nombre de décès', 
         'Nombre de journées perdues', 
         'Somme des taux d\'IP'
@@ -58,3 +60,6 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
     return df
 
 df_final = charger_fusionner_et_nettoyer("mp2021.xlsx", "mp2023.xlsx")
+
+print(df_final.dtypes)
+print(df_final.index)
