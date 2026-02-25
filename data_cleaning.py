@@ -24,7 +24,7 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
         'Somme des taux d\'IP'
     ]
     df_21 = pd.read_excel(fichier_2021, usecols = colonnes_utiles, engine = 'openpyxl')
-    df_23 = pd.read_excel(fichier_2023, usecols = colonnes_utiles, engine = 'openpyxl')
+    df_23 = pd.read_excel(fichier_2023, usecols = colonnes_utiles, sheet_name= 1, engine = 'openpyxl')
     
     # On ajoute une colonne "Année" à chacun d'eux avant la fusion
     df_21['Année'] = 2021
@@ -44,7 +44,13 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
         'Somme des taux d\'IP'
     ]
     for col in colonnes_num:
-        df[col] = pd.to_numeric(df[col], errors = 'coerce').fillna(0)
+        if col in df.columns:
+            # On s'assure que c'est du texte pour pouvoir le manipuler
+            df[col] = df[col].astype(str)
+            # On enlève les espaces et on remplace les virgules par des points
+            df[col] = df[col].str.replace(' ', '', regex=False).str.replace(',', '.', regex=False)
+            # 3. Maintenant, on peut convertir en nombre en toute sécurité !
+            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
         
     # On s'occupe ensuite des vaelurs textuelles vides
     colonnes_texte = [
@@ -59,16 +65,14 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
         
     return df
 
-df_final = charger_fusionner_et_nettoyer("mp2021.xlsx", "mp2023.xlsx")
-
-print(df_final.dtypes)
-print(df_final.index)
-
-df_filtre = df_final.copy()
+df_filtre = charger_fusionner_et_nettoyer("mp2021.xlsx", "mp2023.xlsx")
 
 df_filtre = df_filtre[df_filtre['Année'] == 2023]
     
-df_filtre = df_filtre[df_filtre['libellé profession'] == "Coiffeurs"]
+df_filtre = df_filtre[df_filtre['libellé profession'] == "Agents d'entretien dans les bureaux, les hôtels et autres établissements"]
 
-print(df_filtre.dtypes)
-print(df_filtre.index)
+"""print(df_filtre.dtypes)
+print(df_filtre.index)"""
+
+print("Total réel des cas dans Pandas :", df_filtre['Nombre de MP en premier règlement'].sum())
+print(df_filtre.info())
