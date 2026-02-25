@@ -70,11 +70,7 @@ df_final = charger_fusionner_et_nettoyer("mp2021.xlsx", "mp2023.xlsx")
 
 
 # Les listes déroulantes
-professions_uniques = [
-    "Officier des forces armées",
-    "Directeur d'entreprise",
-    "Chimiste"
-]
+professions_uniques = df_final["libellé profession"].unique()
 
 ages_uniques = [
     "Moins de 20 ans", 
@@ -88,25 +84,19 @@ ages_uniques = [
     "65ans et plus"
 ]
 
-expositions_uniques = [
-    "Indifférent", 
-    "Moins de six mois", 
-    "Six mois à un an", 
-    "Un à cinq ans", 
-    "Cinq à dix ans", 
-    "Plus de 10 ans"
-]
-
 # Disposition de la page
 
 filtres = html.Div([
         # La profession
         dbc.Row([
+            dbc.Label("Profession", className = 'fw-bold'),
             dbc.Col([
                 dcc.Dropdown(id='dropdown-profession', 
                              placeholder = "Rechercher une profession", 
                              options = [{'label' : prof, 'value' : prof} for prof in professions_uniques],
-                             searchable = True)
+                             value = professions_uniques[1],
+                             searchable = True,
+                             clearable = False)
             ], width = 12, className = "mb-4")
         ]),
         
@@ -116,7 +106,8 @@ filtres = html.Div([
                 html.Label("Année"),
                 dcc.Dropdown(id='dropdown-annee', 
                              options = [2021, 2023], 
-                             value = 2023)
+                             value = 2023,
+                             clearable = False)
             ], width = 4),
             dbc.Col([
                 html.Label("Tranche d'âge"),
@@ -124,18 +115,6 @@ filtres = html.Div([
                             options = [{'label' : tranche, 'value' : tranche} for tranche in ages_uniques], 
                             value = ages_uniques[0],
                             clearable = False)
-            ], width = 4),
-            dbc.Col([
-                html.Label("Durée d'exposition"),
-                dcc.Dropdown(id='dropdown-expo', 
-                            options =  [{'label' : expo, 'value' : expo} for expo in expositions_uniques], 
-                            value = expositions_uniques[0])
-            ], width = 4),
-            dbc.Col([
-                html.Label("Sexe"),
-                dcc.Dropdown(id='dropdown-sexe', 
-                            options = ["Masculin", "Féminin"], 
-                            value = "Féminin")
             ], width = 4)
         ], className = "mb-4")
     ], style = {'backgroundColor': '#f8f9fa', 'borderRadius': '10px'})
@@ -144,6 +123,13 @@ contenu = html.Div([
     dbc.Row([
         dbc.Col(html.H2("Risques professionnels en France", className = "text-center mt-3"))
     ]),
+    
+    # Quelques stats
+    dbc.Row([
+        dbc.Col(dbc.Card(dbc.CardBody([html.H5("Total des cas", className = 'card-title'), html.H2(id = 'kpi-cas', className = 'text-info')]))),
+        dbc.Col(dbc.Card(dbc.CardBody([html.H5("Journées perdues", className = 'card-title'), html.H2(id = 'kpi-jours', className = 'text-warning')]))),
+        dbc.Col(dbc.Card(dbc.CardBody([html.H5("Gravité moyenne", className = 'card-title'), html.H2(id = 'kpi-gravite', className = 'text-danger')])))
+    ], className = 'mb-5'),
     
     # Les graphiques 
     # Fréquentes
@@ -181,16 +167,41 @@ app.layout = dbc.Container(
 
 # Les callbacks
 @app.callback(
+    [Output('kpi-cas', 'children'),
+     Output('kpi-jours', 'children'),
+     Output('kpi-gravite', 'children')],
+    [Input('dropdown-profession', 'value'),
+     Input('dropdown-annee', 'value'),
+     Input('dropdown-age', 'value')]
+)
+def update_kpi(profession, annee, age):
+    df_filtre = df_final.copy()
+    
+    if annee: 
+        df_filtre = df_filtre[df_filtre['Année'] == int(annee)]
+    
+    if profession:
+        df_filtre = df_filtre[df_filtre['libellé profession'] == profession]
+    
+    if age:
+        df_filtre = df_filtre[df_filtre['libellé tranche d\'age'] == age]
+    
+    # Calcul des indicateurs 
+    cas = df_filtre['Nombre de MP en premier règlement'].sum(numeric_only=True)
+    jours = df_filtre['Nombre de journées perdues'].sum()
+    gravite = 5
+     
+    return cas, jours, gravite
+
+@app.callback(
     [Output('graph-frequence', 'figure'),
      Output('graph-ip', 'figure'),
      Output('graph-morts', 'figure')],
     [Input('dropdown-profession', 'value'),
      Input('dropdown-annee', 'value'),
-     Input('dropdown-age', 'value'),
-     Input('dropdown-expo', 'value'),
-     Input('dropdown-sexe', 'value')]
+     Input('dropdown-age', 'value')]
 )
-def update_graphe(profession, annee, age, expo, sexe):
+def update_graphe(profession, annee, age):
     return {}, {}, {}
 
 

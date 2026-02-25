@@ -63,3 +63,12 @@ df_final = charger_fusionner_et_nettoyer("mp2021.xlsx", "mp2023.xlsx")
 
 print(df_final.dtypes)
 print(df_final.index)
+
+df_filtre = df_final.copy()
+
+df_filtre = df_filtre[df_filtre['Année'] == 2023]
+    
+df_filtre = df_filtre[df_filtre['libellé profession'] == "Coiffeurs"]
+
+print(df_filtre.dtypes)
+print(df_filtre.index)
