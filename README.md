@@ -1,1 +1,1 @@
-# Les risques de maladie professionnelles 
+# Les risques de maladies professionnelles 
