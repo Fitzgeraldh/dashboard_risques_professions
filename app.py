@@ -3,17 +3,19 @@ from dash import dcc, html, Input, Output, dash_table
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
+import os
 
 # Initialisation de l'application 
 app = dash.Dash(__name__, external_stylesheets = [dbc.themes.FLATLY])
+server = app.server
 
 def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
     """
-    Docstring pour charger_et_nettoyer
     Cette fonction va charger les données depuis les deux fichiers Excel, les fusionner et les nettoyer.
-    
-    :param chemin: Le chemin vers le fichier excel
     """
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    path2021 = os.path.join(BASE_DIR, fichier_2021)
+    path2023 = os.path.join(BASE_DIR, fichier_2023)
     
     # On sélectionne uniquement les colonnes qui nous seront utiles lors du chargement
     colonnes_utiles = [
@@ -21,7 +23,7 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
         'libellé tranche d\'age', 
         'libellé sexe', 
         'Libellé durée d\'exposition', 
-        'Libellé syndrome/ CIM 10',
+        'Libellé tableau de MP',
         'Nombre de MP en premier règlement', 
         'Nombre de nouvelles IP', 
         'dont IP avec taux < 10%',
@@ -30,8 +32,8 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
         'Nombre de journées perdues', 
         'Somme des taux d\'IP'
     ]
-    df_21 = pd.read_excel(fichier_2021, usecols = colonnes_utiles, engine = 'openpyxl')
-    df_23 = pd.read_excel(fichier_2023, usecols = colonnes_utiles, engine = 'openpyxl')
+    df_21 = pd.read_excel(path2021, usecols = colonnes_utiles, engine = 'openpyxl')
+    df_23 = pd.read_excel(path2023, usecols = colonnes_utiles, engine = 'openpyxl')
     
     # On ajoute une colonne "Année" à chacun d'eux avant la fusion
     df_21['Année'] = 2021
@@ -64,7 +66,7 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
         'libellé tranche d\'age', 
         'libellé sexe', 
         'Libellé durée d\'exposition', 
-        'Libellé syndrome/ CIM 10'
+        'Libellé tableau de MP'
     ]
     for col in colonnes_texte:
         df[col] = df[col].fillna('Non renseigné')
@@ -148,9 +150,12 @@ contenu = html.Div([
     
     # Incapacitantes
     dbc.Row([
+        html.H3("Maladies responsables d'incapacités permanentes"),
         dbc.Col([
-            html.H3("Maladies responsables d'incapacités permanentes"),
-            dcc.Graph(id = 'graph-ip')
+            dcc.Graph(id = 'graph-ip-bar')
+        ], width = 12),
+        dbc.Col([
+            dcc.Graph(id = 'graph-ip-scatter')
         ], width = 12)
     ]),
     
@@ -161,7 +166,7 @@ contenu = html.Div([
             dash_table.DataTable(
                 id = 'table-deces',
                 columns = [
-                    {'name': "Maladie / Syndrome", 'id': "Libellé syndrome/ CIM 10"},
+                    {'name': "Maladie / Syndrome", 'id': "Libellé tableau de MP"},
                     {'name': "Nombre de décès", 'id': "Nombre de décès"}
                 ],
                 style_header={
@@ -216,7 +221,14 @@ def update_kpi(profession, annee, age):
     # Calcul des indicateurs 
     cas = df_filtre['Nombre de MP en premier règlement'].sum()
     jours = df_filtre['Nombre de journées perdues'].sum()
-    gravite = 5
+    
+    somme_ip = df_filtre['Somme des taux d\'IP'].sum()
+    nb_ip = df_filtre['Nombre de nouvelles IP'].sum()
+    
+    if nb_ip > 0:
+        gravite = round(somme_ip / nb_ip, 2)
+    else:
+        gravite = 0
      
     return cas, jours, gravite
 
@@ -245,21 +257,23 @@ def update_graphe_frequence(profession, annee, age):
         fig_vide.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
         return fig_vide
     
-    df_groupe = df_filtre.groupby('Libellé syndrome/ CIM 10')['Nombre de MP en premier règlement'].sum().reset_index()
+    df_groupe = df_filtre.groupby('Libellé tableau de MP')['Nombre de MP en premier règlement'].sum().reset_index()
     
     df_top10 = df_groupe.sort_values(by='Nombre de MP en premier règlement', ascending=False).head(10) # Les 10 premiers
     
     df_top10 = df_top10.sort_values(by='Nombre de MP en premier règlement', ascending=True) # Pour inverser l'ordre des barres avant le dessin 
     
+    df_top10 = df_top10[df_top10['Nombre de MP en premier règlement'] > 0]
+    
     fig = px.bar(
         df_top10,
         x='Nombre de MP en premier règlement',
-        y='Libellé syndrome/ CIM 10',
+        y='Libellé tableau de MP',
         orientation='h', # C'est cette option qui met les barres à l'horizontale
         title="Top 10 des maladies professionnelles les plus fréquentes",
         labels={
             'Nombre de MP en premier règlement': 'Nombre de nouveaux cas',
-            'Libellé syndrome/ CIM 10': '' # On vide ce titre car les noms parlent d'eux-mêmes
+            'Libellé tableau de MP': '' # On vide ce titre car les noms parlent d'eux-mêmes
         },
         color_discrete_sequence=['#2C3E50'] # Une couleur sobre et pro (bleu nuit)
     )
@@ -276,12 +290,73 @@ def update_graphe_frequence(profession, annee, age):
 
 
 @app.callback(
-    Output('graph-ip', 'figure'),
+    Output('graph-ip-bar', 'figure'),
     [Input('dropdown-profession', 'value'),
      Input('dropdown-annee', 'value'),
      Input('dropdown-age', 'value')]
 )
-def update_graphe_ip(profession, annee, age):
+def update_graphe_ip_bar(profession, annee, age):
+    df_filtre = df_final.copy()
+    
+    if annee: 
+        df_filtre = df_filtre[df_filtre['Année'] == int(annee)]
+    
+    if profession:
+        df_filtre = df_filtre[df_filtre['libellé profession'] == profession]
+    
+    if age:
+        df_filtre = df_filtre[df_filtre['libellé tranche d\'age'] == age]
+    
+    df_ip = df_filtre.groupby('Libellé tableau de MP').agg({
+        'Somme des taux d\'IP': 'sum',
+        'Nombre de nouvelles IP': 'sum'
+    }).reset_index()
+    df_ip = df_ip[df_ip['Nombre de nouvelles IP'] > 0]
+    
+    if df_ip.empty:
+        fig_vide = px.bar(title="Aucune donnée d'incapacité pour cette sélection")
+        fig_vide.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
+        return fig_vide
+    
+    df_ip['Taux moyen IP (%)'] = df_ip['Somme des taux d\'IP'] / df_ip['Nombre de nouvelles IP']
+    
+    # On garde les 10 maladies les plus invalidantes (et on trie pour l'affichage de bas en haut)
+    df_top_ip = df_ip.sort_values(by='Taux moyen IP (%)', ascending=True).tail(10)
+    
+    fig = px.bar(
+        df_top_ip,
+        x='Taux moyen IP (%)',
+        y='Libellé tableau de MP',
+        orientation='h',
+        title="Top 10 des maladies les plus invalidantes (Taux moyen d'IP)",
+        labels={
+            'Taux moyen IP (%)': 'Taux d\'incapacité moyen (%)',
+            'Libellé tableau de MP': ''
+        },
+        color='Taux moyen IP (%)', # Ajoute un dégradé de couleur selon la gravité
+        color_continuous_scale='Reds' # Les taux les plus élevés seront en rouge foncé
+    )
+    
+    fig.update_layout(
+        xaxis=dict(showgrid=True, gridcolor='#e9ecef', ticksuffix="%"), # Ajoute le symbole % sur l'axe
+        yaxis=dict(showgrid=False),
+        plot_bgcolor='rgba(0,0,0,0)', 
+        paper_bgcolor='rgba(0,0,0,0)',
+        coloraxis_showscale=False # Cache la barre de légende du dégradé pour faire plus propre
+    )
+    
+    # Arrondir les valeurs affichées au survol à 1 décimale
+    fig.update_traces(hovertemplate="<b>%{y}</b><br>Taux moyen: %{x:.1f}%<extra></extra>")
+    
+    return fig
+
+@app.callback(
+    Output('graph-ip-scatter', 'figure'),
+    [Input('dropdown-profession', 'value'),
+     Input('dropdown-annee', 'value'),
+     Input('dropdown-age', 'value')]
+)
+def update_graphe_ip_scatter(profession, annee, age):
     df_filtre = df_final.copy()
     
     if annee: 
@@ -293,21 +368,41 @@ def update_graphe_ip(profession, annee, age):
     if age:
         df_filtre = df_filtre[df_filtre['libellé tranche d\'age'] == age]
         
-    # Regroupement selon les deux types d'IP
-    df_ip = df_filtre.groupby('Libellé syndrome/ CIM 10')[['dont IP avec taux < 10%', 'dont IP avec taux >= 10%']].sum().reset_index()
-    
-    # Calcul du total pour identifier les pires
-    df_ip['Total_IP'] = df_ip['dont IP avec taux < 10%'] + df_ip['dont IP avec taux >= 10%']
-    df_ip = df_ip[df_ip['Total_IP'] > 0]
-    df_top_ip = df_ip.sort_values(by='Total_IP', ascending = False).head(10)
+    # Regroupement par maladie pour avoir le total des cas et le total des jours perdus
+    df_scatter = df_filtre.groupby('Libellé tableau de MP').agg({
+        'Nombre de MP en premier règlement': 'sum',
+        'Nombre de journées perdues': 'sum'
+    }).reset_index()
         
-    if df_top_ip.empty:
-        fig_vide = px.bar(title="Aucune incapacité permanente recensée")
+    if df_scatter.empty:
+        fig_vide = px.scatter(title="Aucune donnée pour la matrice d'impact")
         fig_vide.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
         return fig_vide
     
-    return {}
-
+    fig_scatter = px.scatter(
+        df_scatter,
+        x='Nombre de MP en premier règlement',
+        y='Nombre de journées perdues',
+        hover_name='Libellé tableau de MP', # Le nom de la maladie apparaît au survol de la souris
+        title="Matrice d'impact : Fréquence vs Journées perdues",
+        labels={
+            'Nombre de MP en premier règlement': 'Nombre de nouveaux cas',
+            'Nombre de journées perdues': 'Journées perdues'
+        },
+        color_discrete_sequence=['#E67E22'] # Une couleur orange vif pour bien voir les points
+    )
+    
+    fig_scatter.update_traces(marker=dict(size=12, opacity=0.8, line=dict(width=1, color='DarkSlateGrey')))
+    
+    fig_scatter.update_layout(
+        xaxis=dict(showgrid=True, gridcolor='#e9ecef', zeroline=True, zerolinecolor='lightgrey'),
+        yaxis=dict(showgrid=True, gridcolor='#e9ecef', zeroline=True, zerolinecolor='lightgrey'),
+        plot_bgcolor='rgba(0,0,0,0)', 
+        paper_bgcolor='rgba(0,0,0,0)',
+    )
+    
+    return fig_scatter
+    
 
 @app.callback(
     Output('graph-profil', 'figure'),
@@ -400,7 +495,7 @@ def update_deces(profession, annee, age):
         return []
     
     # Regroupement par maladie et somme des décès
-    df_groupe = df_deces.groupby('Libellé syndrome/ CIM 10')['Nombre de décès'].sum().reset_index()
+    df_groupe = df_deces.groupby('Libellé tableau de MP')['Nombre de décès'].sum().reset_index()
     
     df_trie = df_groupe.sort_values(by = 'Nombre de décès', ascending = False)
     
