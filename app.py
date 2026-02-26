@@ -80,8 +80,8 @@ professions_uniques = df_final["libellé profession"].unique()
 
 ages_uniques = df_final['libellé tranche d\'age'].unique()
 
-# Disposition de la page
 
+# Disposition de la page
 filtres = html.Div([
         # La profession
         dbc.Row([
@@ -114,6 +114,7 @@ filtres = html.Div([
             ], width = 4)
         ], className = "mb-4")
     ], style = {'backgroundColor': '#f8f9fa', 'borderRadius': '10px'})
+
 
 contenu = html.Div([
     dbc.Row([
@@ -180,6 +181,7 @@ contenu = html.Div([
     ]),
 ], style = {'padding' : '2rem'})
 
+
 app.layout = dbc.Container(
     [
         dbc.Row([dbc.Col(filtres)]),
@@ -187,6 +189,7 @@ app.layout = dbc.Container(
     ],
     fluid = True
 )
+
 
 
 # Les callbacks
@@ -216,6 +219,7 @@ def update_kpi(profession, annee, age):
     gravite = 5
      
     return cas, jours, gravite
+
 
 @app.callback(
     Output('graph-frequence', 'figure'),
@@ -370,6 +374,7 @@ def update_graphe_profil(profession, annee, age):
     )
     
     return fig
+
 
 @app.callback(
     Output('table-deces', 'data'),
