@@ -4,9 +4,15 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 import os
+import textwrap
 
 # Initialisation de l'application 
-app = dash.Dash(__name__, external_stylesheets = [dbc.themes.FLATLY])
+app = dash.Dash(
+    __name__, 
+    external_stylesheets = [dbc.themes.FLATLY, dbc.icons.FONT_AWESOME],
+    title = "SafeWork Dashboard",
+    update_title = "Chargement..."
+)
 server = app.server
 
 def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
@@ -72,7 +78,6 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
 
 df_final = charger_fusionner_et_nettoyer("mp2021.xlsx", "mp2023.xlsx")
 
-
 # Les listes déroulantes
 professions_uniques = df_final["libellé profession"].unique()
 
@@ -80,79 +85,151 @@ ages_uniques = df_final['libellé tranche d\'age'].unique()
 
 
 # Disposition de la page
-filtres = html.Div([
-        # La profession
-        dbc.Row([
-            dbc.Label("Profession", className = 'fw-bold'),
-            dbc.Col([
-                dcc.Dropdown(id='dropdown-profession', 
-                             placeholder = "Rechercher une profession", 
-                             options = [{'label' : prof, 'value' : prof} for prof in professions_uniques],
-                             value = "Agents d'entretien dans les bureaux, les hôtels et autres établissements",
-                             searchable = True,
-                             clearable = False)
-            ], width = 12, className = "mb-4")
-        ]),
+filtres = dbc.Row([
+    dbc.Col([
+        html.Label("Profession", className = "d-block fw-bold"),
+        dcc.Dropdown(id='dropdown-profession',
+                     options = [{'label' : prof, 'value' : prof} for prof in professions_uniques],
+                     value = "Agents d'entretien dans les bureaux, les hôtels et autres établissements",
+                     searchable = True,
+                     clearable = False)
+    ], width = 6),
         
-        # Les filtres
-        dbc.Row([
-            dbc.Col([
-                html.Label("Année"),
-                dcc.Dropdown(id='dropdown-annee', 
-                             options = [2021, 2023], 
-                             value = 2023,
-                             clearable = False)
-            ], width = 4),
-            dbc.Col([
-                html.Label("Tranche d'âge"),
-                dcc.Dropdown(id='dropdown-age', 
-                            options = [{'label' : tranche, 'value' : tranche} for tranche in ages_uniques], 
-                            value = ages_uniques[0],
-                            clearable = False)
-            ], width = 4)
-        ], className = "mb-4")
-    ], style = {'backgroundColor': '#f8f9fa', 'borderRadius': '10px'})
+    dbc.Col([
+        html.Label("Année", className = "d-block fw-bold"),
+        dcc.Dropdown(id='dropdown-annee', 
+                     options = [2021, 2023], 
+                     value = 2023,
+                     clearable = False)
+    ], width = 3),
+        
+    dbc.Col([
+        html.Label("Tranche d'âge", className = "d-block fw-bold"),
+        dcc.Dropdown(id='dropdown-age', 
+                    options = [{'label' : tranche, 'value' : tranche} for tranche in ages_uniques], 
+                    value = ages_uniques[0],
+                    clearable = False)
+    ], width = 3)
+], className = "py-3")
 
 
-contenu = html.Div([
+titre = html.Div([
+    html.Div([
+        html.H1([
+            html.Span("Safe", style={"color": "#18BC9C", "fontWeight": "bold"}), # Le vert "Santé"
+            html.Span("Work", style={"color": "#2C3E50", "fontWeight": "300"}), # Le bleu foncé "Pro"
+        ], className="mb-0", style={"letterSpacing": "1px"}),
+        
+        html.P("Plateforme d'analyse des risques liés aux maladies professionnelles", 
+               className="text-muted fw-bold", style={"fontSize": "0.9rem", "marginTop": "-5px"})
+    ], className="py-4 text-center") # Ajoute un peu d'espace vertical
+])
+
+
+contenu = html.Div([    
+    # Quelques stats (KPI)
     dbc.Row([
-        dbc.Col(html.H2("Risques professionnels en France", className = "text-center mt-3"))
-    ]),
-    
-    # Quelques stats
-    dbc.Row([
-        dbc.Col(dbc.Card(dbc.CardBody([html.H5("Nouveaux cas", className = 'card-title'), html.H2(id = 'kpi-cas', className = 'text-info')]))),
-        dbc.Col(dbc.Card(dbc.CardBody([html.H5("Journées perdues", className = 'card-title'), html.H2(id = 'kpi-jours', className = 'text-warning')]))),
-        dbc.Col(dbc.Card(dbc.CardBody([html.H5("Gravité moyenne", className = 'card-title'), html.H2(id = 'kpi-gravite', className = 'text-danger')])))
+        dbc.Col(
+            dbc.Card(
+                dbc.CardBody([
+                    dbc.Row([
+                        dbc.Col([
+                            html.H6("Nouveaux cas recensés", className="text-muted mb-1"),
+                            html.H3(id = 'kpi-cas', style={"color": "#3498DB", "fontWeight": "bold"}, className="mb-0"),
+                        ], width=9),
+                        dbc.Col([
+                            html.I(className=f"fas {"fa-user-plus"} fa-2x", style={"color": "#3498DB", "opacity": "0.3"})
+                        ], width=3, className="d-flex align-items-center justify-content-center")
+                    ])
+                ]),
+                style={
+                    "borderRadius": "10px",
+                    "borderLeft": f"5px solid {"#3498DB"}", # Liseré de couleur sur le côté
+                    "boxShadow": "0 4px 6px rgba(0,0,0,0.05)",
+                    "marginBottom": "10px"
+                }
+            ), width = 4
+        ),
+        dbc.Col(
+            dbc.Card(
+                dbc.CardBody([
+                    dbc.Row([
+                        dbc.Col([
+                            html.H6("Journées perdues", className="text-muted mb-1"),
+                            html.H3(id = 'kpi-jours', style={"color": "#F39C12", "fontWeight": "bold"}, className="mb-0"),
+                        ], width=9),
+                        dbc.Col([
+                            html.I(className=f"fas {"fa-calendar-times"} fa-2x", style={"color": "#F39C12", "opacity": "0.3"})
+                        ], width=3, className="d-flex align-items-center justify-content-center")
+                    ])
+                ]),
+                style={
+                    "borderRadius": "10px",
+                    "borderLeft": f"5px solid {"#F39C12"}", # Liseré de couleur sur le côté
+                    "boxShadow": "0 4px 6px rgba(0,0,0,0.05)",
+                    "marginBottom": "10px"
+                }
+            ), width = 4    
+        ),
+        dbc.Col(
+            dbc.Card(
+                dbc.CardBody([
+                    dbc.Row([
+                        dbc.Col([
+                            html.H6("Gravité moyenne", className="text-muted mb-1"),
+                            html.H3(id = 'kpi-gravite', style={"color": "#E74C3C", "fontWeight": "bold"}, className="mb-0"),
+                        ], width=9),
+                        dbc.Col([
+                            html.I(className=f"fas {"fa-notes-medical"} fa-2x", style={"color": "#E74C3C", "opacity": "0.3"})
+                        ], width=3, className="d-flex align-items-center justify-content-center")
+                    ])
+                ]),
+                style={
+                    "borderRadius": "10px",
+                    "borderLeft": f"5px solid {"#E74C3C"}", # Liseré de couleur sur le côté
+                    "boxShadow": "0 4px 6px rgba(0,0,0,0.05)",
+                    "marginBottom": "10px"
+                }
+            ), width = 4
+        )
     ], className = 'mb-5'),
     
     # Les graphiques 
-    
     # Profil
-    dbc.Row([
-        dbc.Col([
-            html.H3("Profil des victimes"),
+    dbc.Card([
+        dbc.CardHeader(
+            html.H4("Profil des malades selon le sexe et la durée d'exposition", className = "mb-0 text-center")
+        ),
+        dbc.CardBody([
             dcc.Graph(id = 'graph-profil')
-        ], width = 12)
-        ]),
+        ])
+    ]),
     
     # Fréquentes
     dbc.Row([
-        dbc.Col([
-            html.H3("Maladies fréquentes"),
-            dcc.Graph(id = 'graph-frequence')
-        ], width = 12)
-    ]),
+        dbc.Col(
+            dbc.Card([
+                dbc.CardHeader("Top 10 des maladies les plus fréquentes"),
+                dbc.CardBody(dcc.Graph(id = 'graph-frequence'))
+            ]), 
+            width = 12
+        )
+    ], className = "mb-4"),
     
     # Incapacitantes
     dbc.Row([
-        html.H3("Maladies responsables d'incapacités permanentes"),
-        dbc.Col([
-            dcc.Graph(id = 'graph-ip-bar')
-        ], width = 12),
-        dbc.Col([
-            dcc.Graph(id = 'graph-ip-scatter')
-        ], width = 12)
+        dbc.Col(
+            dbc.Card([
+                dbc.CardHeader("Analayse de la gravité (Maladies incapacitantes)"),
+                dbc.CardBody([
+                    dbc.Row([
+                        dbc.Col(dcc.Graph(id = 'graph-ip-bar'), width = 6),
+                        dbc.Col(dcc.Graph(id = 'graph-ip-scatter'), width = 6)
+                    ])
+                ])
+            ]), 
+            width = 12
+        )
     ]),
     
     # Mortelles
@@ -187,13 +264,35 @@ contenu = html.Div([
 ], style = {'padding' : '2rem'})
 
 
-app.layout = dbc.Container(
-    [
-        dbc.Row([dbc.Col(filtres)]),
-        dbc.Row([dbc.Col(contenu)])
-    ],
-    fluid = True
-)
+app.layout = html.Div([
+    # Les filtres
+    html.Div(
+        dbc.Container(
+            filtres,
+            fluid = True
+        ),
+        style = {
+            "position": "sticky",
+            "top": "0",
+            "zIndex": "1020",
+            "backgroundColor": "#ffffff",
+            "borderBottom": "2px solid #18BC9C",
+            "boxShadow": "0 2px 4px rgba(0,0,0,0.1)"
+        }
+    ),
+    
+    # Le titre
+    dbc.Container(
+       dbc.Row(titre),
+       fluid = True
+    ),
+    
+    # Le contenu
+    dbc.Container(
+        dbc.Row([dbc.Col(contenu)]),
+        fluid = True, className = "mt-4"
+    )
+])
 
 
 
@@ -257,7 +356,8 @@ def update_graphe_frequence(profession, annee, age):
         fig_vide.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
         return fig_vide
     
-    df_groupe = df_filtre.groupby('Libellé tableau de MP')['Nombre de MP en premier règlement'].sum().reset_index()
+    df_filtre['Maladie'] = df_filtre['Libellé tableau de MP'].apply(lambda x: "<br>".join(textwrap.wrap(x, width=50)))
+    df_groupe = df_filtre.groupby('Maladie')['Nombre de MP en premier règlement'].sum().reset_index()
     
     df_top10 = df_groupe.sort_values(by='Nombre de MP en premier règlement', ascending=False).head(10) # Les 10 premiers
     
@@ -268,14 +368,13 @@ def update_graphe_frequence(profession, annee, age):
     fig = px.bar(
         df_top10,
         x='Nombre de MP en premier règlement',
-        y='Libellé tableau de MP',
+        y='Maladie',
         orientation='h', # C'est cette option qui met les barres à l'horizontale
-        title="Top 10 des maladies professionnelles les plus fréquentes",
         labels={
             'Nombre de MP en premier règlement': 'Nombre de nouveaux cas',
-            'Libellé tableau de MP': '' # On vide ce titre car les noms parlent d'eux-mêmes
+            'Maladie': '' # On vide ce titre car les noms parlent d'eux-mêmes
         },
-        color_discrete_sequence=['#2C3E50'] # Une couleur sobre et pro (bleu nuit)
+        color_discrete_sequence=["#4682B4"] # Une couleur sobre et pro (bleu nuit)
     )
     
     fig.update_layout(
@@ -330,8 +429,8 @@ def update_graphe_ip_bar(profession, annee, age):
         orientation='h',
         title="Top 10 des maladies les plus invalidantes (Taux moyen d'IP)",
         labels={
-            'Taux moyen IP (%)': 'Taux d\'incapacité moyen (%)',
-            'Libellé tableau de MP': ''
+            'Taux moyen IP (%)': 'Taux d\'incapacité (%)',
+            'Libellé tableau de MP': 'Maladie'
         },
         color='Taux moyen IP (%)', # Ajoute un dégradé de couleur selon la gravité
         color_continuous_scale='Reds' # Les taux les plus élevés seront en rouge foncé
@@ -432,14 +531,13 @@ def update_graphe_profil(profession, annee, age):
         fig_vide.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
         return fig_vide
 
-    # 3. Création du graphique en barres groupées
+    # Création du graphique en barres groupées
     fig = px.bar(
         df_profil,
         x='Libellé durée d\'exposition',
         y='Nombre de MP en premier règlement',
         color='libellé sexe',
         barmode='group', # L'option clé pour mettre les barres côte à côte
-        title="Profil des victimes selon le sexe et la durée d'exposition",
         labels={
             'Nombre de MP en premier règlement': 'Nombre de cas',
             'Libellé durée d\'exposition': 'Durée d\'exposition',
@@ -447,13 +545,13 @@ def update_graphe_profil(profession, annee, age):
         },
         # On définit des couleurs claires pour différencier facilement
         color_discrete_map={
-            'Hommes': '#3498DB', # Bleu
-            'Femmes': '#9B59B6', # Violet
-            'Non renseigné': '#BDC3C7' # Gris pour les valeurs vides/inconnues
+            'Masculin': '#5dade2',
+            'Féminin': '#18BC9C',
+            'Non précisé': '#BDC3C7' # Gris pour les valeurs vides/inconnues
         }
     )
     
-    # 4. Ajustements esthétiques
+    # Ajustements esthétiques
     fig.update_layout(
         yaxis=dict(showgrid=True, gridcolor='#e9ecef'),
         xaxis=dict(showgrid=False),
@@ -468,6 +566,11 @@ def update_graphe_profil(profession, annee, age):
             title=None # Masque le mot "Sexe" au-dessus de la légende pour faire plus propre
         )
     )
+    
+    ordre_duree = ["Moins de six mois", "Six mois à un an", "Un à cinq ans", 
+                "Cinq à dix ans", "Plus de dix ans", "Non précisé"]
+
+    fig.update_xaxes(categoryorder='array', categoryarray=ordre_duree)
     
     return fig
 
