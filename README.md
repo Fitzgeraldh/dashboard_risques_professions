@@ -26,7 +26,7 @@ Le dashboard est accessible à toutes personnes souhaitant analyser et comprendr
 ## Sources des données
 Les données exploitées proviennent du site de l’Assurance Maladie (Ameli). En utilisant des méthodes de web-scraping, les fichiers Excel disponibles ont été récupérés, téléchargés, nettoyés avant d’être ensuite exploités dans le dashboard.
 
-* Variables exploitées : 
+Variables exploitées : 
   - Année
   - Sexe
   - Tranche d’âge
