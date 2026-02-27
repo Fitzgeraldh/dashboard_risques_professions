@@ -55,7 +55,7 @@ WorkSafe-Dashboard/
 Promotion 2025-2026 du Master 1 Data Science en Santé à l’UFR3S - ILIS.
  - Douâe AAZOUZ
  - Fitzgerald ADOGONY
- - Séphora KOKODE
+ - Séphora KOKODÉ
  - Zineb MAHBOUB
  - Maathula MAHENTHIRAN
 
