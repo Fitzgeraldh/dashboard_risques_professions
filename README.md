@@ -20,7 +20,7 @@ Ce dashboard interactif développé avec Dash (Python) permet d’explorer les d
 
 
 ### Les bénéficiaires
-Le dashboard est accessible à toutes personnes souhaitant analyser et comprendre les tendances des risques de maladies professionnelles en France, sur une année donnée. Il reste accessible à tout moment, et est mis à jour annuellement, en fonction des données rendues disponibles.
+Le dashboard est accessible à toute personne souhaitant analyser et comprendre les tendances des risques de maladies professionnelles en France, sur une année donnée. Il reste accessible à tout moment, et est mis à jour annuellement, en fonction des données rendues disponibles.
 
 
 ## Sources des données
