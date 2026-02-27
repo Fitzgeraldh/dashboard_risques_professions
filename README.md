@@ -31,9 +31,9 @@ Variables exploitées :
   - Sexe
   - Tranche d’âge
   - Profession
-  - Durée d’exposition de la maladie
+  - Durée d’exposition
   - Syndrome / Maladie
-  - Jours de travail perdues
+  - Jours de travail perdus
 
 
 ## Aperçus
@@ -52,7 +52,7 @@ WorkSafe-Dashboard/
 ```
 
 ## Auteurs
-Promotion 2025-2026 du Master 1 Data Science en Santé à l’Institut Lillois d’Ingénierie de la Santé.
+Promotion 2025-2026 du Master 1 Data Science en Santé à l’UFR3S - ILIS.
  - Douâe AAZOUZ
  - Fitzgerald ADOGONY
  - Séphora KOKODE
