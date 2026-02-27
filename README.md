@@ -1,7 +1,7 @@
-# Les risques de maladies professionnelles en France
+# SafeWork Dashboard
 
 ## Lien d’accès
-Le dashboard interactif est accessible à l’adresse suivante : [mettre le lien]
+Le dashboard interactif sur les risques est accessible à l’adresse suivante : [mettre le lien]
 
 
 ## Le projet
