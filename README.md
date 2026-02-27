@@ -45,3 +45,13 @@ Les données ont été nettoyées et préparées avant l’analyse…
 ## Structure du projet
 [expliquer les dossiers sur le git]
 
+
+#### Auteurs
+Promotion 2025-2026 du Master 1 Data Science en Santé à l’Institut Lillois d’Ingénierie de la Santé.
+ - Douâe AAZOUZ
+ - Fitzgerald ADOGONY
+ - Séphora KOKODE
+ - Zineb MAHBOUB
+ - Maathula MAHENTHIRAN
+
+
