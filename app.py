@@ -62,7 +62,7 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
         # 3. Maintenant, on peut convertir en nombre en toute sécurité !
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
         
-    # On s'occupe ensuite des vaelurs textuelles vides
+    # On s'occupe ensuite des valeurs textuelles vides
     colonnes_texte = [
         'libellé profession', 
         'libellé tranche d\'age', 
