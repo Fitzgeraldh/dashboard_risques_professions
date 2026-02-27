@@ -223,8 +223,8 @@ contenu = html.Div([
                 dbc.CardHeader("Analayse de la gravité (Maladies incapacitantes)"),
                 dbc.CardBody([
                     dbc.Row([
-                        dbc.Col(dcc.Graph(id = 'graph-ip-bar'), width = 6),
-                        dbc.Col(dcc.Graph(id = 'graph-ip-scatter'), width = 6)
+                        dbc.Col(dcc.Graph(id = 'graph-ip-bar'), width = 12),
+                        dbc.Col(dcc.Graph(id = 'graph-ip-scatter'), width = 12)
                     ])
                 ])
             ]), 
@@ -382,7 +382,7 @@ def update_graphe_frequence(profession, annee, age):
         yaxis=dict(showgrid=False), # Pas de grille horizontale pour ne pas surcharger
         plot_bgcolor='rgba(0,0,0,0)', # Fond transparent pour s'intégrer parfaitement à ton thème
         paper_bgcolor='rgba(0,0,0,0)',
-        margin=dict(l=0, r=20, t=50, b=0) # On ajuste les marges pour que le graphique respire
+        margin=dict(l=200, r=20, t=50, b=0) # On ajuste les marges pour que le graphique respire
     )
     
     return fig
@@ -417,6 +417,8 @@ def update_graphe_ip_bar(profession, annee, age):
         fig_vide.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
         return fig_vide
     
+    df_ip['Maladie'] = df_ip['Libellé tableau de MP'].apply(lambda x: "<br>".join(textwrap.wrap(x, width=50)))
+    
     df_ip['Taux moyen IP (%)'] = df_ip['Somme des taux d\'IP'] / df_ip['Nombre de nouvelles IP']
     
     # On garde les 10 maladies les plus invalidantes (et on trie pour l'affichage de bas en haut)
@@ -425,12 +427,12 @@ def update_graphe_ip_bar(profession, annee, age):
     fig = px.bar(
         df_top_ip,
         x='Taux moyen IP (%)',
-        y='Libellé tableau de MP',
+        y='Maladie',
         orientation='h',
         title="Top 10 des maladies les plus invalidantes (Taux moyen d'IP)",
         labels={
             'Taux moyen IP (%)': 'Taux d\'incapacité (%)',
-            'Libellé tableau de MP': 'Maladie'
+            'Maladie': 'Maladie'
         },
         color='Taux moyen IP (%)', # Ajoute un dégradé de couleur selon la gravité
         color_continuous_scale='Reds' # Les taux les plus élevés seront en rouge foncé
