@@ -26,8 +26,6 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
         'Libellé tableau de MP',
         'Nombre de MP en premier règlement', 
         'Nombre de nouvelles IP', 
-        'dont IP avec taux < 10%',
-        'dont IP avec taux >= 10%',
         'Nombre de décès', 
         'Nombre de journées perdues', 
         'Somme des taux d\'IP'
@@ -46,8 +44,6 @@ def charger_fusionner_et_nettoyer(fichier_2021, fichier_2023):
     colonnes_num = [
         'Nombre de MP en premier règlement', 
         'Nombre de nouvelles IP', 
-        'dont IP avec taux < 10%', 
-        'dont IP avec taux >= 10%', 
         'Nombre de décès', 
         'Nombre de journées perdues', 
         'Somme des taux d\'IP'
@@ -182,6 +178,10 @@ contenu = html.Div([
                 page_size=5, # Affiche un maximum de 5 lignes pour rester compact
                 style_table={'overflowX': 'auto'}
             )
+        ], width = 12),
+        dbc.Col([
+            html.H3("Heatmap des victimes", className="text-danger mt-5 mb-3"),
+            dcc.Graph(id='graph-heatmap-deces')
         ], width = 12)
     ]),
 ], style = {'padding' : '2rem'})
@@ -350,6 +350,7 @@ def update_graphe_ip_bar(profession, annee, age):
     
     return fig
 
+
 @app.callback(
     Output('graph-ip-scatter', 'figure'),
     [Input('dropdown-profession', 'value'),
@@ -501,5 +502,53 @@ def update_deces(profession, annee, age):
     
     return df_trie.to_dict('records') # Parce que les données viennent sous forme de dictionnaire
 
+
+@app.callback(
+    Output('graph-heatmap-deces', 'figure'),
+    [Input('dropdown-profession', 'value'),
+     Input('dropdown-annee', 'value')]
+)
+def update_heatmap_deces(profession, annee):
+    df_filtre = df_final.copy()
+    
+    if annee: 
+        df_filtre = df_filtre[df_filtre['Année'] == int(annee)]
+    
+    if profession:
+        df_filtre = df_filtre[df_filtre['libellé profession'] == profession]
+        
+    df_deces = df_filtre[df_filtre['Nombre de décès'] > 0]
+    
+    if df_deces.empty:
+        fig_vide = px.density_heatmap(title="Aucun décès recensé pour cette sélection")
+        fig_vide.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', xaxis=dict(visible=False), yaxis=dict(visible=False))
+        return fig_vide
+    
+    fig = px.density_heatmap(
+        df_deces,
+        x="Libellé durée d'exposition",
+        y="libellé tranche d\'age",
+        z="Nombre de décès",
+        histfunc="sum", # C'est ici qu'on dit à Plotly d'additionner les décès par case
+        title="Mortalité : Âge vs Durée d'exposition",
+        labels={
+            "Libellé durée d'exposition": "Durée d'exposition",
+            "libellé tranche d\'age": "Tranche d'âge",
+            "Nombre de décès": "Décès"
+        },
+        color_continuous_scale='Reds', # Une échelle de couleur rouge pour l'alerte
+        text_auto=True # Affiche le nombre de décès directement au centre de chaque case !
+    )
+    
+    # Finitions
+    fig.update_layout(
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        coloraxis_showscale=False, # On cache la barre de couleur à côté car les chiffres sont dans les cases
+        yaxis={'categoryorder': 'category ascending'},
+    )
+    
+    return fig
+    
 if __name__ == '__main__':
     app.run(debug = True)
