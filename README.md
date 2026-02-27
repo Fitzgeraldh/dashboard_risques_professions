@@ -35,8 +35,6 @@ Variables exploitées :
   - Syndrome / Maladie
   - Jours de travail perdues
 
-Les données ont été nettoyées et préparées avant l’analyse…
-
 
 ## Aperçus
 [mettre des photos]
@@ -54,4 +52,5 @@ Promotion 2025-2026 du Master 1 Data Science en Santé à l’Institut Lillois d
  - Zineb MAHBOUB
  - Maathula MAHENTHIRAN
 
+Ce projet a été réalisé collectivement, l’ensemble des membres du groupe a participé au développement et à la finalisation de ce projet.
 
