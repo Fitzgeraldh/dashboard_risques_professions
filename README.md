@@ -1,7 +1,7 @@
 # Les risques de maladies professionnelles en France
 
 ## Lien d’accès
-Le dashboard interactif est accessible à l’adresse suivante : https://fitzgerald.pythonanywhere.com/ 
+Le dashboard interactif est accessible à l’adresse suivante : [mettre le lien]
 
 
 ## Le projet
@@ -41,8 +41,15 @@ Variables exploitées :
 
 
 ## Structure du projet
-[expliquer les dossiers sur le git]
-
+```text
+WorkSafe-Dashboard/
+├── README.md         # Documentation générale du projet
+├── app.py            # Nettoyage des données + génération de la page web
+├── mp2021.xlsx       # Données brutes 2021
+├── mp2023.xlsx       # Données brutes 2023
+├── scrap_data.py     # Récupération automatique des données
+└── update_data.py    # Mise à jour des fichiers de données
+```
 
 ## Auteurs
 Promotion 2025-2026 du Master 1 Data Science en Santé à l’Institut Lillois d’Ingénierie de la Santé.
