@@ -1,7 +1,7 @@
 # Les risques de maladies professionnelles en France
 
 ## Lien d’accès
-Le dashboard interactif est accessible à l’adresse suivante : [insérer lien]
+Le dashboard interactif est accessible à l’adresse suivante : https://fitzgerald.pythonanywhere.com/ 
 
 
 ## Le projet
@@ -24,7 +24,7 @@ Le dashboard est accessible à toutes personnes souhaitant analyser et comprendr
 
 
 ## Sources des données
-Les données exploitées proviennent du site de l’Assurance Maladie (Ameli). Les indicateurs quantitatifs ont été récupérés à partir de fichiers de données (CSV) avec du web scraping …
+Les données exploitées proviennent du site de l’Assurance Maladie (Ameli). En utilisant des méthodes de web-scraping, les fichiers Excel disponibles ont été récupérés, téléchargés, nettoyés avant d’être ensuite exploités dans le dashboard.
 
 * Variables exploitées : 
   - Année
@@ -46,7 +46,7 @@ Les données ont été nettoyées et préparées avant l’analyse…
 [expliquer les dossiers sur le git]
 
 
-#### Auteurs
+## Auteurs
 Promotion 2025-2026 du Master 1 Data Science en Santé à l’Institut Lillois d’Ingénierie de la Santé.
  - Douâe AAZOUZ
  - Fitzgerald ADOGONY
