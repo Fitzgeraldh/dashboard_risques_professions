@@ -5,7 +5,7 @@ Le dashboard interactif est accessible à l’adresse suivante : [mettre le lien
 
 
 ## Le projet
-Ce dashboard s’inscrit dans le cadre d’un travail universitaire visant à concevoir un dashboard interactif permettant d’analyser des données publiques de santé issues de l’Assurance Maladie sur les maladies professionnelles en France.
+Ce dashboard s’inscrit dans le cadre d’un travail universitaire visant à concevoir un dashboard interactif permettant d’analyser des données publiques de santé issues de l’Assurance Maladie sur les risques de maladies professionnelles en France.
 
 ### Les objectifs
 L’objectif de ce projet est d’analyser et de visualiser les indicateurs clés liés aux maladies professionnelles en France, afin de mieux comprendre, leur fréquence et leur gravité selon l’âge, le sexe, la profession ou la durée d’exposition. Le projet vise également à intégrer des méthodes de web scraping dans le but d’enrichir et de contextualiser les données, tout en automatisant l’exploitation et la mise à jour des informations utilisées dans le dashboard.
