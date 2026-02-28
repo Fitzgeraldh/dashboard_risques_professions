@@ -1,8 +1,7 @@
 # SafeWork Dashboard
 
 ## Lien d’accès
-Le dashboard interactif est accessible à l’adresse suivante : [mettre le lien]
-
+Le dashboard interactif est accessible à l’adresse suivante : https://fitzgerald.pythonanywhere.com/ 
 
 ## Le projet
 Ce dashboard s’inscrit dans le cadre d’un travail universitaire visant à concevoir un dashboard interactif permettant d’analyser des données publiques de santé issues de l’Assurance Maladie sur les risques de maladies professionnelles en France.
@@ -23,6 +22,7 @@ Ce dashboard interactif développé avec Dash (Python) permet d’explorer les d
 Le dashboard est accessible à toute personne souhaitant analyser et comprendre les tendances des risques de maladies professionnelles en France, sur une année donnée. Il reste accessible à tout moment, et est mis à jour annuellement, en fonction des données rendues disponibles.
 
 
+
 ## Sources des données
 Les données exploitées proviennent du site de l’Assurance Maladie (Ameli). En utilisant des méthodes de web-scraping, les fichiers Excel disponibles ont été récupérés, téléchargés, nettoyés avant d’être ensuite exploités dans le dashboard.
 
@@ -37,10 +37,12 @@ Variables exploitées :
 
 
 ## Aperçus
-[mettre des photos]
+Voici un petit aperçu du dashboard.
+
+<img width="1887" height="964" alt="image" src="https://github.com/user-attachments/assets/33499f7c-ac0e-4b59-b338-a5f9d3a22374" />
 
 
-## Structure du projet
+## Structure du dossier
 ```text
 WorkSafe-Dashboard/
 ├── README.md         # Documentation générale du projet
