@@ -646,9 +646,10 @@ def update_heatmap_deces(profession, annee):
     if profession:
         df_filtre = df_filtre[df_filtre['libellé profession'] == profession]
         
-    df_deces = df_filtre #[df_filtre['Nombre de décès'] > 0]
+    df_mort = df_filtre[df_filtre['Nombre de décès'] > 0]
+    df_deces = df_filtre
     
-    if df_deces.empty:
+    if df_mort.empty:
         fig_vide = px.density_heatmap(title="Aucun décès recensé pour cette sélection")
         fig_vide.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', xaxis=dict(visible=False), yaxis=dict(visible=False))
         return fig_vide
