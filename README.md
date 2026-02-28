@@ -8,11 +8,12 @@ Ce dashboard s’inscrit dans le cadre d’un travail universitaire visant à co
 
 ### Les objectifs
 L’objectif de ce projet est d’analyser et de visualiser les indicateurs clés liés aux maladies professionnelles en France, afin de mieux comprendre, leur fréquence et leur gravité selon l’âge, le sexe, la profession ou la durée d’exposition. Le projet vise également à intégrer des méthodes de web scraping dans le but d’enrichir et de contextualiser les données, tout en automatisant l’exploitation et la mise à jour des informations utilisées dans le dashboard.
-Le dashboard permet de répondre à plusieurs problématiques :
-  * Quels sont les cas de maladies professionnelles recensés pour une profession donnée ?
+
+Dans ce contexte, le projet SafeWork s’articule autour de la problématique suivante : *« Quels sont les risques de maladies professionnelles associés à une profession donnée et comment varient-ils selon l’âge, le sexe et l’année recensée ? »*.
+
+Le dashboard permet également d’accéder à des informations telles que :
   * Quelles maladies sont les plus fréquentes pour une profession donnée ?
   * Quelle est la gravité des maladies professionnelles sélectionnées ?
-  * Quels sont les types de maladies professionnelles les plus représentés ?
   * Existe-t-il des inégalités de risque entre hommes et femmes pour une même profession ?
 
 Ce dashboard interactif développé avec Dash (Python) permet d’explorer les données de manière intuitive.
