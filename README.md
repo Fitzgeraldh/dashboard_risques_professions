@@ -1,7 +1,7 @@
 # SafeWork Dashboard
 
 ## Lien d’accès
-Le dashboard interactif est accessible à l’adresse suivante : https://fitzgerald.pythonanywhere.com/ 
+Le dashboard interactif est accessible à l’adresse suivante : [SafeWorkDashboard](https://fitzgerald.pythonanywhere.com/) 
 
 ## Le projet
 Ce dashboard s’inscrit dans le cadre d’un travail universitaire visant à concevoir un dashboard interactif permettant d’analyser des données publiques de santé issues de l’Assurance Maladie sur les risques de maladies professionnelles en France.
