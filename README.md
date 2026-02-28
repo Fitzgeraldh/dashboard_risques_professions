@@ -22,6 +22,7 @@ Ce dashboard interactif développé avec Dash (Python) permet d’explorer les d
 Le dashboard est accessible à toute personne souhaitant analyser et comprendre les tendances des risques de maladies professionnelles en France, sur une année donnée. Il reste accessible à tout moment, et est mis à jour annuellement, en fonction des données rendues disponibles.
 
 
+
 ## Sources des données
 Les données exploitées proviennent du site de l’Assurance Maladie (Ameli). En utilisant des méthodes de web-scraping, les fichiers Excel disponibles ont été récupérés, téléchargés, nettoyés avant d’être ensuite exploités dans le dashboard.
 
