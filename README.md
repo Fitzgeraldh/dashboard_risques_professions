@@ -32,9 +32,10 @@ Variables exploitées :
   - Tranche d’âge
   - Profession
   - Durée d’exposition
-  - Syndrome / Maladie
-  - Jours de travail perdus
-
+  - Syndrome / Maladie professionnelle
+  - Nombre de journées de travail perdues
+  - Nombre de décès
+  - Taux d'incapacités permanentes
 
 ## Aperçus
 Voici un petit aperçu du dashboard.
