@@ -214,7 +214,7 @@ contenu = html.Div([
         dbc.Col(
             dbc.Card([
                 dbc.CardHeader(
-                    html.H4("Top 10 des maladies les plus fréquentes", className = "mb-0 text-center")
+                    html.H4("Top des maladies les plus fréquentes", className = "mb-0 text-center")
                 ),
                 dbc.CardBody(dcc.Graph(id = 'graph-frequence'))
             ], className="shadow border-0 mt-4"), 
@@ -227,7 +227,7 @@ contenu = html.Div([
         dbc.Col(
             dbc.Card([
                 dbc.CardHeader(
-                    html.H4("Analayse de la gravité (Maladies incapacitantes)", className = "mb-0 text-center")
+                    html.H4("Analyse de la gravité (Maladies incapacitantes)", className = "mb-0 text-center")
                 ),
                 dbc.CardBody([
                     dbc.Row([
@@ -245,7 +245,7 @@ contenu = html.Div([
         dbc.Col(
             dbc.Card([
                 dbc.CardHeader(
-                    html.H4("Focus sur la mortalité professionnelle", className = "mb-0 text-center"),
+                    html.H4("Focus sur la mortalité en milieu professionnel", className = "mb-0 text-center"),
                 ),
                 dbc.CardBody([
                     dbc.Row([
@@ -455,7 +455,7 @@ def update_graphe_ip_bar(profession, annee, age):
         x='Taux moyen IP (%)',
         y='Maladie',
         orientation='h',
-        title="Top 10 des maladies les plus invalidantes (Taux moyen d'IP)",
+        title="Top des maladies les plus invalidantes (Taux moyen d'IP)",
         labels={
             'Taux moyen IP (%)': 'Taux d\'incapacité (%)',
             'Maladie': 'Maladie'
