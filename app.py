@@ -121,7 +121,7 @@ titre = html.Div([
         ], className="mb-0", style={"letterSpacing": "1px"}),
         
         html.P("Plateforme d'analyse des risques liés aux maladies professionnelles", 
-               className="text-muted fw-bold", style={"fontSize": "0.9rem", "marginTop": "-5px"})
+               className="text-muted fw-bold", style={"fontSize": "1.2rem", "marginTop": "15px"})
     ], className="py-4 text-center") # Ajoute un peu d'espace vertical
 ])
 
@@ -134,7 +134,7 @@ contenu = html.Div([
                 dbc.CardBody([
                     dbc.Row([
                         dbc.Col([
-                            html.H6("Nouveaux cas recensés", className="text-muted mb-1"),
+                            html.H6("Nouveaux cas", className="text-muted mb-1"),
                             html.H3(id = 'kpi-cas', style={"color": "#3498DB", "fontWeight": "bold"}, className="mb-0"),
                         ], width=9),
                         dbc.Col([
@@ -196,22 +196,28 @@ contenu = html.Div([
     
     # Les graphiques 
     # Profil
-    dbc.Card([
-        dbc.CardHeader(
-            html.H4("Profil des malades selon le sexe et la durée d'exposition", className = "mb-0 text-center")
-        ),
-        dbc.CardBody([
-            dcc.Graph(id = 'graph-profil')
-        ])
-    ]),
+    dbc.Row([
+        dbc.Col(
+            dbc.Card([
+                dbc.CardHeader(
+                    html.H4("Profil des malades selon le sexe et la durée d'exposition", className = "mb-0 text-center")
+                ),
+                dbc.CardBody([
+                    dcc.Graph(id = 'graph-profil')
+                ])
+            ], className="shadow border-0 mt-4")
+        )
+    ], className = "mb-4"),
     
     # Fréquentes
     dbc.Row([
         dbc.Col(
             dbc.Card([
-                dbc.CardHeader("Top 10 des maladies les plus fréquentes"),
+                dbc.CardHeader(
+                    html.H4("Top 10 des maladies les plus fréquentes", className = "mb-0 text-center")
+                ),
                 dbc.CardBody(dcc.Graph(id = 'graph-frequence'))
-            ]), 
+            ], className="shadow border-0 mt-4"), 
             width = 12
         )
     ], className = "mb-4"),
@@ -220,47 +226,67 @@ contenu = html.Div([
     dbc.Row([
         dbc.Col(
             dbc.Card([
-                dbc.CardHeader("Analayse de la gravité (Maladies incapacitantes)"),
+                dbc.CardHeader(
+                    html.H4("Analayse de la gravité (Maladies incapacitantes)", className = "mb-0 text-center")
+                ),
                 dbc.CardBody([
                     dbc.Row([
                         dbc.Col(dcc.Graph(id = 'graph-ip-bar'), width = 12),
                         dbc.Col(dcc.Graph(id = 'graph-ip-scatter'), width = 12)
                     ])
                 ])
-            ]), 
+            ], className="shadow border-0 mt-4"), 
             width = 12
         )
-    ]),
+    ], className = "mb-4"),
     
     # Mortelles
     dbc.Row([
-        dbc.Col([
-            html.H3("Focus sur les maladies létales"),
-            dash_table.DataTable(
-                id = 'table-deces',
-                columns = [
-                    {'name': "Maladie / Syndrome", 'id': "Libellé tableau de MP"},
-                    {'name': "Nombre de décès", 'id': "Nombre de décès"}
-                ],
-                style_header={
-                    'backgroundColor': '#E74C3C',
-                    'color': 'white',
-                    'fontWeight': 'bold'
-                },
-                style_cell={
-                    'textAlign': 'left',
-                    'padding': '12px',
-                    'fontFamily': 'sans-serif'
-                },
-                page_size=5, # Affiche un maximum de 5 lignes pour rester compact
-                style_table={'overflowX': 'auto'}
-            )
-        ], width = 12),
-        dbc.Col([
-            html.H3("Heatmap des victimes", className="text-danger mt-5 mb-3"),
-            dcc.Graph(id='graph-heatmap-deces')
-        ], width = 12)
-    ]),
+        dbc.Col(
+            dbc.Card([
+                dbc.CardHeader(
+                    html.H4("Focus sur la mortalité professionnelle", className = "mb-0 text-center"),
+                ),
+                dbc.CardBody([
+                    dbc.Row([
+                        dbc.Col([
+                            html.H5("Maladies ayant causé au moins un décès", className="mb-3 text-muted"),
+                            dash_table.DataTable(
+                                id = 'table-deces',
+                                columns = [
+                                    {'name': "Maladie / Syndrome", 'id': "Libellé tableau de MP"},
+                                    {'name': "Nombre de décès", 'id': "Nombre de décès"}
+                                ],
+                                style_header={
+                                    'backgroundColor': '#f8f9fa',
+                                    'fontWeight': 'bold',
+                                    'border' : 'none'
+                                },
+                                style_cell={
+                                    'textAlign': 'left',
+                                    'padding': '12px',
+                                    'fontFamily': 'Segoe UI',
+                                    'border' : 'none',
+                                    'borderBottom' : '1px solid #eee'
+                                },
+                                style_data_conditional = [{
+                                    'if' : {'column_id' : 'Libellé tableau de MP'},
+                                    'color' : '#2C3E50',
+                                    'fontWeight' : '500'
+                                }],
+                                page_size=5, # Affiche un maximum de 5 lignes pour rester compact
+                                style_table={'overflowX': 'auto', 'overflowY' : 'auto'}
+                            )
+                        ], width = 12),
+                        dbc.Col([
+                            html.H5("Profils les plus exposés (nombre de décès)", className="mb-3 text-muted"),
+                            dcc.Graph(id='graph-heatmap-deces')
+                        ], width = 12, style = {'padding' : '20px'})
+                    ])
+                ])
+            ], className="shadow border-0 mt-4")
+        )
+    ])
 ], style = {'padding' : '2rem'})
 
 
@@ -491,17 +517,15 @@ def update_graphe_ip_scatter(profession, annee, age):
             'Nombre de MP en premier règlement': 'Nombre de nouveaux cas',
             'Nombre de journées perdues': 'Journées perdues'
         },
-        color_discrete_sequence=['#E67E22'] # Une couleur orange vif pour bien voir les points
+        color = 'Nombre de journées perdues',
+        color_continuous_scale = 'Reds'
     )
     
-    fig_scatter.update_traces(marker=dict(size=12, opacity=0.8, line=dict(width=1, color='DarkSlateGrey')))
+    fig_scatter.update_traces(marker=dict(size = 10, opacity=0.8, line=dict(width=1, color='Black')))
+    fig_scatter.update_layout(template = "plotly_white", coloraxis_showscale = False)
     
-    fig_scatter.update_layout(
-        xaxis=dict(showgrid=True, gridcolor='#e9ecef', zeroline=True, zerolinecolor='lightgrey'),
-        yaxis=dict(showgrid=True, gridcolor='#e9ecef', zeroline=True, zerolinecolor='lightgrey'),
-        plot_bgcolor='rgba(0,0,0,0)', 
-        paper_bgcolor='rgba(0,0,0,0)',
-    )
+    fig_scatter.update_xaxes(showgrid = False, zeroline = True, zerolinecolor = 'lightgray')
+    fig_scatter.update_yaxes(showgrid = True, gridcolor = 'whitesmoke')
     
     return fig_scatter
     
@@ -622,7 +646,7 @@ def update_heatmap_deces(profession, annee):
     if profession:
         df_filtre = df_filtre[df_filtre['libellé profession'] == profession]
         
-    df_deces = df_filtre[df_filtre['Nombre de décès'] > 0]
+    df_deces = df_filtre #[df_filtre['Nombre de décès'] > 0]
     
     if df_deces.empty:
         fig_vide = px.density_heatmap(title="Aucun décès recensé pour cette sélection")
@@ -635,24 +659,32 @@ def update_heatmap_deces(profession, annee):
         y="libellé tranche d\'age",
         z="Nombre de décès",
         histfunc="sum", # C'est ici qu'on dit à Plotly d'additionner les décès par case
-        title="Mortalité : Âge vs Durée d'exposition",
         labels={
             "Libellé durée d'exposition": "Durée d'exposition",
             "libellé tranche d\'age": "Tranche d'âge",
             "Nombre de décès": "Décès"
         },
-        color_continuous_scale='Reds', # Une échelle de couleur rouge pour l'alerte
-        text_auto=True # Affiche le nombre de décès directement au centre de chaque case !
+        color_continuous_scale=[[0, '#ffffff'], [0.1, '#fee5d9'], [1, '#a50f15']], # Une échelle de couleur rouge pour l'alerte
+        text_auto=False, # Affiche le nombre de décès directement au centre de chaque case 
+        category_orders={
+            "Libellé durée d'exposition": ["Moins de six mois", "Six mois à un an", "Un à cinq ans", "Cinq à dix ans", "Plus de dix ans", "Non précisé"],
+            "libellé tranche d\'age": ["Moins de 20 ans", "de 20 à 24 ans", "de 25 à 29 ans", "de 30 à 34 ans", "de 35 à 39 ans", "de 40 à 49 ans", "de 50 à 59 ans", "de 60 à 64 ans", "65 ans et plus"]
+        }
     )
     
     # Finitions
     fig.update_layout(
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='white',
         coloraxis_showscale=False, # On cache la barre de couleur à côté car les chiffres sont dans les cases
-        yaxis={'categoryorder': 'category ascending'},
+        xaxis_title = None,
+        yaxis_title = None,
+        margin = dict(l = 10, r = 10, t = 10, b = 10),
+        height = 350
     )
     
+    fig.update_xaxes(showgrid = False)
+    fig.update_yaxes(showgrid = False)
+
     return fig
     
 if __name__ == '__main__':
