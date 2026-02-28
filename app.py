@@ -120,7 +120,7 @@ titre = html.Div([
             html.Span("Work", style={"color": "#2C3E50", "fontWeight": "300"}), # Le bleu foncé "Pro"
         ], className="mb-0", style={"letterSpacing": "1px"}),
         
-        html.P("Plateforme d'analyse des risques liés aux maladies professionnelles", 
+        html.P("Plateforme d'analyse des risques liés aux maladies en milieu professionnel", 
                className="text-muted fw-bold", style={"fontSize": "1.2rem", "marginTop": "15px"})
     ], className="py-4 text-center") # Ajoute un peu d'espace vertical
 ])
