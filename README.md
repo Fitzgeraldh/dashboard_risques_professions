@@ -41,7 +41,7 @@ Voici un petit aperçu du dashboard.
 <img width="1887" height="964" alt="image" src="https://github.com/user-attachments/assets/33499f7c-ac0e-4b59-b338-a5f9d3a22374" />
 
 
-## Structure du projet
+## Structure du dossier
 ```text
 WorkSafe-Dashboard/
 ├── README.md         # Documentation générale du projet
